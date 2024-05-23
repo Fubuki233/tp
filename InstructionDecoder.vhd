@@ -30,18 +30,18 @@ ARCHITECTURE behavior OF Instruction_Decoder IS
     BEGIN
         CASE instruction(27 DOWNTO 26) IS
             WHEN "00" =>
-                IF  instruction(24 DOWNTO 21) = "1101" THEN     --MOV操作 MOV A,B
+                IF  instruction(24 DOWNTO 21) = "1101" THEN     --MOV操作 把A值给B
                     if instruction(25) = '1' then
                         instr_current <= MOV;
                         --Rm <= instruction(3 DOWNTO 0);
                         nPCSel <= '0';      --只需要在跳转时使能
                         RegWr <= '1';
                         ALUSrc <= '0';     
-                        ALUCtr <= "001";  -- 输出信号为B，即MOV A,B
+                        ALUCtr <= "001";  -- 输出信号为A，
                         PSREn <= '0';
                         MemWr <= '0';
                         WrSrc <= '0';
-                        RegSel <= '0';
+                        RegSel <= '1';
                         RegAff <= '0';
                     else 
                         instr_current <= MOV;
@@ -53,7 +53,7 @@ ARCHITECTURE behavior OF Instruction_Decoder IS
                         PSREn <= '0';
                         MemWr <= '0';
                         WrSrc <= '0';
-                        RegSel <= '0';
+                        RegSel <= '1';
                         RegAff <= '0';
                     end if;
 				END IF;	

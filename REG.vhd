@@ -22,6 +22,7 @@ function init_banc return table is
     result(i) := (others=>'0'); 
     end loop; 
     result(15):=X"00000030";   
+    result(1):=X"00000030";   
     return result; 
     end init_banc;
 signal Banc: table:=init_banc;

@@ -12,7 +12,7 @@ entity TopLevel is
         Mem_WrEn :in STD_LOGIC;
         --ROA,ROB : out STD_LOGIC_VECTOR(3 downto 0);
         --W : in STD_LOGIC_VECTOR(31 downto 0);
-        N, Z, C, V: out STD_LOGIC;
+        CPSR : out std_logic_vector(3 downto 0);
         addre : out std_logic_vector(5 downto 0);                      ---没写extender
         OutPut_Data,A,B,MUX1_Out1,MUX2_Out1,ALU_out : out STD_LOGIC_VECTOR(31 downto 0)
         
@@ -24,9 +24,9 @@ architecture Behavioral of TopLevel is
 
     -----------
     
-    signal ALU_N, ALU_Z, ALU_C, ALU_V,WEE: STD_LOGIC;
+    signal  CPSR1 :STD_LOGIC_VECTOR(3 downto 0);
     signal ALU_output : STD_LOGIC_VECTOR(31 downto 0);                       ---ALU
-
+   
     -----------
     
     signal Bus_A, Bus_B : STD_LOGIC_VECTOR(31 downto 0);
@@ -53,7 +53,7 @@ architecture Behavioral of TopLevel is
             
             OP : in std_logic_vector(2 downto 0);   
             A,B : in std_logic_vector(31 downto 0);
-            N,Z,C,V : out std_logic:='0'; -- output flags
+            CPSR : out std_logic_vector(3 downto 0);
             S:out std_logic_vector(31 downto 0) -- output
         );
     end component;
@@ -102,10 +102,7 @@ end component;
             OP=>OP1,
             A =>Bus_A,
             B => MUX1_Out,
-            N => ALU_N,
-            Z => ALU_Z,
-            C => ALU_C,
-            V => ALU_V,
+            CPSR => open,
             S => ALU_output
             --S(5 downto 0) => Mem_Addr
     );
@@ -134,19 +131,11 @@ end component;
     process (CLK, RST)
     begin
     if RST = '1' then
-        N <= '0';
-        Z <= '0';
-        C <= '0';
-        V <= '0';
+        
         OutPut_Data <= (others => '0');
         A <= (others => '0');
         B <= (others => '0');
     elsif rising_edge(CLK) then
-    
-    N <= ALU_N;
-    Z <= ALU_Z;
-    C <= ALU_C;
-    V <= ALU_V;
     A <= Bus_A;
     B <= Bus_B;
     addre <= ALU_output(5 downto 0);

@@ -130,8 +130,22 @@ end component;
         immediat_in  => imme8,
         immediat_out => Imme_Num
         );
+    I1D_inst: Instruction_Decoder port map(
+        instruction => instruction,
+        nPCsel => nPCsel, 
+        PSR => CPSR1,
+        RegWr => WEE,
+        ALUCtr => OPIN,
+        PSREn => PSREn,
+        ALUSrc => MUX1_COM,
+        MemWr => Mem_WrEn,
+        WrSrc => MUX2_COM,
+        RegSel => RegSel,
+        RegAff => RegAff
+
+    );    
     IMU_inst: Instruction_Management_Unit port map(
-        clk => CLK,
+        CLK => CLK,
         reset => RST,
         nPCsel => nPCsel, 
         offset => offset, 
@@ -180,20 +194,7 @@ end component;
         DataOutput => MUX2_InB
 
     );
-    I1D_inst: Instruction_Decoder port map(
-        instruction => instruction,
-        nPCsel => nPCsel, 
-        PSR => CPSR1,
-        RegWr => WEE,
-        ALUCtr => OPIN,
-        PSREn => PSREn,
-        ALUSrc => MUX1_COM,
-        MemWr => Mem_WrEn,
-        WrSrc => MUX2_COM,
-        RegSel => RegSel,
-        RegAff => RegAff
 
-    );
     MUX2_inst: MUX port map (
         A => ALU_output,
         B => MUX2_InB,   

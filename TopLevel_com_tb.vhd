@@ -18,10 +18,10 @@ ARCHITECTURE behavior OF TopLevel_tb IS
         Mem_WrEn :in STD_LOGIC;
         --ROA,ROB : out STD_LOGIC_VECTOR(3 downto 0);
         --W : in STD_LOGIC_VECTOR(31 downto 0);
-        N, Z, C, V: out STD_LOGIC;                      ---没写extender
-        addre : out std_logic_vector(5 downto 0);
+        CPSR : out std_logic_vector(3 downto 0);
+        addre : out std_logic_vector(5 downto 0);                      ---没写extender
         OutPut_Data,A,B,MUX1_Out1,MUX2_Out1,ALU_out : out STD_LOGIC_VECTOR(31 downto 0)
-
+        
     );
     END COMPONENT;
    
@@ -34,10 +34,7 @@ ARCHITECTURE behavior OF TopLevel_tb IS
 
     --Outputs
     signal address : std_logic_vector(5 downto 0);
-    signal N : std_logic;
-    signal Z : std_logic;
-    signal C : std_logic;
-    signal V : std_logic;
+
     signal Imme_Num,MUX1_Out,MUX2_Out,ALU_out1: std_logic_vector(31 downto 0);
     signal A_O,DataOutput : std_logic_vector(31 downto 0) := (others => '0');
     signal B_O,test1 : std_logic_vector(31 downto 0) := (others => '1');
@@ -52,10 +49,7 @@ BEGIN
         CLK => CLK,
         RST => RST,
         OP1 => OP1,
-        N => N,
-        Z => Z,
-        C => C,
-        V => V,
+        CPSR => OPEN,
         Rea=>Rea1,
         Reb=>Reb1,
         WE=>WEE,
