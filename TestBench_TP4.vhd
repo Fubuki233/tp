@@ -34,14 +34,8 @@ BEGIN
     );
 
     -- Clock process definitions
-    --clk <= '0' when Done else not clk after CLK_period;
-    clk_process : process
-    begin
-        CLK <= '0';
-        wait for CLK_period/2;
-        CLK <= '1';
-        wait for CLK_period/2;
-    end process;
+    clk <= '0' when Done else not clk after CLK_period;
+
     -- Stimulus process
     stim_proc: process
     begin       
@@ -51,6 +45,8 @@ BEGIN
         wait for CLK_period * 2;
         RST <= '0';
         wait for CLK_period * 2;
+        wait for 200 ns;
+        Done <= True;
         --Done <= True;
         wait;
 

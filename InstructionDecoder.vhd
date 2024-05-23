@@ -37,7 +37,7 @@ ARCHITECTURE behavior OF Instruction_Decoder IS
                         nPCSel <= '0';      --只需要在跳转时使能
                         RegWr <= '1';
                         ALUSrc <= '0';     
-                        ALUCtr <= "001";  -- 输出信号为A，
+                        ALUCtr <= "011";  -- 输出信号为A，
                         PSREn <= '0';
                         MemWr <= '0';
                         WrSrc <= '0';
@@ -57,20 +57,20 @@ ARCHITECTURE behavior OF Instruction_Decoder IS
                         RegAff <= '0';
                     end if;
 				END IF;	
-                IF  instruction(25)='0' AND instruction(24 DOWNTO 21) = "0000" THEN     --ADDR操作 对两个寄存器值相加
+                IF  instruction(25)='0' AND instruction(24 DOWNTO 21) = "0100" THEN     --ADDR操作 对两个寄存器值相加
                     instr_current <= ADDr;
                     --Rm <= instruction(3 DOWNTO 0);
                     nPCSel <= '0';
                     RegWr <= '1';
-                    ALUSrc <= '0'; 
-                    ALUCtr <= "000";     --A+B 
-                    PSREn <= '0';
+                    ALUSrc <= '0';
+                    ALUCtr <= "000";
+                    PSREn <= '1';
                     MemWr <= '0';
                     WrSrc <= '0';
-                    RegSel <= '0';
+                    RegSel <= '1';
                     RegAff <= '0';
 				END IF;	
-                IF  instruction(25)='1' AND instruction(24 DOWNTO 21) = "0000" THEN     --ADDi操作 对两个寄存器值相加,25位只对需要立即数操作的运算有效 其他不需要立即数参与运算的不需要考虑
+                IF  instruction(25)='1' AND instruction(24 DOWNTO 21) = "0100" THEN     --ADDi操作 对两个寄存器值相加,25位只对需要立即数操作的运算有效 其他不需要立即数参与运算的不需要考虑
                     instr_current <= ADDi;
                     --Rm <= instruction(3 DOWNTO 0);
                     nPCSel <= '0';
@@ -88,20 +88,19 @@ ARCHITECTURE behavior OF Instruction_Decoder IS
                     --Rm <= instruction(3 DOWNTO 0);
                     nPCSel <= '0';
                     RegWr <= '0';
-                    --ALUSrc <= '1';     -- 使用立即数
+                    ALUSrc <= '1';     -- 使用立即数
                     ALUCtr <= "010";     --A-B 
                     PSREn <= '1';
                     MemWr <= '0';
                     WrSrc <= '0';
-                    RegSel <= '0';
+                    RegSel <= '1';
                     RegAff <= '0';
 				END IF;	
              WHEN "01" =>
                 -- LDR和STR指令
-                IF instruction(24 DOWNTO 20) = "01011" THEN        --将寄存器RA的
+                if instruction(27 downto 26) = "01" and instruction(20) = '1' then        --将寄存器RA的
                     instr_current <= LDR;
-                    if instruction(25) = '1' then
-                        nPCSel <= '0';
+                       /* nPCSel <= '0';
                         RegWr <= '1';      -- 写入寄存器
                         ALUSrc <= '0';     -- 使用寄存器值作为ALU输入
                         ALUCtr <= "001";  -- LDR指令的控制信号
@@ -110,42 +109,28 @@ ARCHITECTURE behavior OF Instruction_Decoder IS
                         WrSrc <= '1';      -- 从内存读取数据
                         RegSel <= '1';
                         RegAff <= '0';
-                    else
+                        */
                         nPCSel <= '0';
-                        RegWr <= '1';      -- 写入寄存器
-                        ALUSrc <= '1';     -- 使用寄存器值作为ALU输入
-                        ALUCtr <= "001";  -- LDR指令的控制信号
+                        RegWr <= '1';
+                        ALUSrc <= '1';
+                        ALUCtr <= "011";
                         PSREn <= '0';
-                        MemWr <= '0';      -- 不写入内存
-                        WrSrc <= '1';      -- 从内存读取数据
-                        RegSel <= '1';
+                        MemWr <= '0';
+                        WrSrc <= '1';
                         RegAff <= '0';
-                    end if;
 
                 end if;
-                IF instruction(24 DOWNTO 20) = "01001" THEN
+                if instruction(27 downto 26) = "01" and instruction(20) = '0' then  
                     instr_current <= STR;
-                if instruction(25) = '1' then
                     nPCSel <= '0';
-                    RegWr <= '0';      -- 不写入寄存器
-                    ALUSrc <= '0';     -- 使用寄存器值作为ALU输入
-                    ALUCtr <= "001";  -- STR指令的控制信号
+                    RegWr <= '0';
+                    ALUSrc <= '1';
+                    ALUCtr <= "011";
                     PSREn <= '0';
-                    MemWr <= '1';      -- 写入内存
-                    WrSrc <= '0';      -- STR指令不使用
+                    MemWr <= '1';
                     RegSel <= '1';
-                    RegAff <= '0';
-                else
-                    nPCSel <= '0';
-                    RegWr <= '0';      -- 不写入寄存器
-                    ALUSrc <= '1';     -- 使用寄存器值作为ALU输入
-                    ALUCtr <= "001";  -- STR指令的控制信号
-                    PSREn <= '0';
-                    MemWr <= '1';      -- 写入内存
-                    WrSrc <= '0';      -- STR指令不使用
-                    RegSel <= '1';
-                    RegAff <= '0';
-                end if;
+                    RegAff <= '1';
+                
                 END IF;
             WHEN OTHERS =>
             
@@ -160,23 +145,23 @@ ARCHITECTURE behavior OF Instruction_Decoder IS
                 IF instruction(24) = '0' THEN
                     nPCSel <= '1'; -- 跳转
                     RegWr <= '0'; -- 不写入r14
-                    ALUSrc <= '1'; -- 使用立即数
-                    ALUCtr <= "000"; -- 控制信号假设值
+                    --ALUSrc <= '1'; -- 使用立即数
+                    --ALUCtr <= "000"; -- 控制信号假设值
                     PSREn <= '0';
                     MemWr <= '0';
-                    WrSrc <= '0';
+                    --WrSrc <= '0';
                     RegSel <= '0';
                     RegAff <= '0';
             ELSE
                 -- 条件不满足，不跳转
                 nPCSel <= '0'; -- 不跳转
                 RegWr <= '0'; -- 不写入寄存器
-                ALUSrc <= '0';
-                ALUCtr <= "000";
+                --ALUSrc <= '0';
+                --ALUCtr <= "000";
                 PSREn <= '0';
                 MemWr <= '0';
-                WrSrc <= '0';
-                RegSel <= '0';
+                --WrSrc <= '0';
+                --RegSel <= '0';
                 RegAff <= '0';
                 END IF;
 			END IF;	
@@ -186,23 +171,23 @@ ARCHITECTURE behavior OF Instruction_Decoder IS
             IF instruction(24) = '0' THEN
                 nPCSel <= '1'; -- 跳转
                 RegWr <= '0'; -- 不写入r14
-                ALUSrc <= '1'; -- 使用立即数
-                ALUCtr <= "000"; -- 控制信号假设值
+                --ALUSrc <= '1'; -- 使用立即数
+                --ALUCtr <= "000"; -- 控制信号假设值
                 PSREn <= '0';
                 MemWr <= '0';
-                WrSrc <= '0';
-                RegSel <= '0';
+                --WrSrc <= '0';
+                --RegSel <= '0';
                 RegAff <= '0';
             ELSE
                 -- 如果L位不为0，说明指令有误，设置为不跳转
                 nPCSel <= '0'; -- 不跳转
                 RegWr <= '0'; -- 不写入寄存器
-                ALUSrc <= '0';
-                ALUCtr <= "000";
+                --ALUSrc <= '0';
+                --ALUCtr <= "000";
                 PSREn <= '0';
                 MemWr <= '0';
-                WrSrc <= '0';
-                RegSel <= '0';
+                --WrSrc <= '0';
+                --RegSel <= '0';
                 RegAff <= '0';
             END IF;
             WHEN OTHERS =>

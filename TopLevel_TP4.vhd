@@ -32,7 +32,7 @@ architecture Behavioral of TopLevel_TP4 is
     signal MUX1_COM,MUX2_COM:std_logic:='0';
     signal MUX1_Out,MUX2_Out:std_logic_vector(31 downto 0);
     signal MUX3_Out:std_logic_vector(3 downto 0);
-    signal WE,COM1,COM2 : STD_LOGIC;
+    signal WE,ALUSrc,COM2 : STD_LOGIC;
     ---mux1&2
     
     -----------
@@ -126,10 +126,7 @@ end component;
             );
         end component;
     begin
-    ImmediateExtender_inst : ImmediateExtender port map (
-        immediat_in  => imme8,
-        immediat_out => Imme_Num
-        );
+
     I1D_inst: Instruction_Decoder port map(
         instruction => instruction,
         nPCsel => nPCsel, 
@@ -148,7 +145,7 @@ end component;
         CLK => CLK,
         reset => RST,
         nPCsel => nPCsel, 
-        offset => offset, 
+        offset => instruction(23 downto 0), 
         instruction => instruction,
         Rd => Rd,
         Rm => Rm,
@@ -156,14 +153,17 @@ end component;
         imm8 => imme8
 
     );
-
+    ImmediateExtender_inst : ImmediateExtender port map (
+        immediat_in  => imme8,
+        immediat_out => Imme_Num
+        );
 
     reg_inst: REG port map (
         CLK => CLK,
         RST => RST,
         RA => Rn, 
         RB => MUX3_Out, 
-        RW => ReW, 
+        RW => Rd, 
         W => busW,
         WE => WEE, 
         A => Bus_A,
@@ -178,7 +178,7 @@ end component;
         S => ALU_output
     );
     MUX1_inst: MUX port map (
-        COM => COM1,
+        COM => MUX1_COM,
         A => Bus_B,
         B => Imme_Num,   ---没写位数选择
         S => MUX1_Out
@@ -199,7 +199,7 @@ end component;
         A => ALU_output,
         B => MUX2_InB,   
         S => busW,
-        COM => COM2
+        COM => MUX2_COM
     );
     MUX3_inst: MUX3 port map (
         A => Rm,
@@ -213,7 +213,7 @@ end component;
         --OutPut_Data <= (others => '0');
     elsif rising_edge(CLK) then
         if RegAff='1' then
-            --OutPut_Data <= Bus_B(15 downto 0);
+            OutPut_Data <= Bus_B(15 downto 0);
         end if;
     --MUX2_Out1 <= busW;
     end if;

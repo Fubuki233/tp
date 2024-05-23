@@ -28,9 +28,10 @@ begin
 	process (CLK, RST)
 	begin 
 		if RST='1' then
-            for i in 63 downto 0 loop 
+            for i in 63 downto 1 loop 
                 Mem(i) <= (others=>'0'); 
             end loop;   
+                Mem(0) <= X"00000001"; 
         elsif  rising_edge(CLK) then
             if WrEn='1' then
                 Mem(To_integer(Unsigned(Addr))) <= DataInput;

@@ -25,15 +25,15 @@ architecture Behavioral of Instruction_Management_Unit is
         for i in 63 downto 0 loop 
         result (i):=(others=>'0'); 
         end loop;           -- PC        -- INSTRUCTION  -- COMMENTAIRE 
-        result (0):=x"E3A01010";-- 0x0 _main -- MOV R1,#0x10 -- R1 = 0x10 
-        result (1):=x"E3A02000";-- 0x1       -- MOV R2,#0x00 -- R2 = 0 
-        result (2):=x"E4110000";-- 0x2 _loop -- LDR R0,0(R1) -- R0 = DATAMEM[R1]  
-        result (3):=x"E0822000";-- 0x3       -- ADD R2,R2,R0 -- R2 = R2 + R0 
-        result (4):=x"E2811001";-- 0x4       
-        result (5):=x"E351001A";-- 0x5      
-        result (6):=x"BAFFFFFB";-- 0x6       
-        result (7):=x"E4012000";-- 0x7       
-        result (8):=x"EAFFFFF7";-- 0x8       
+            result (0) := x"E3A01020";-- 0x0 _main -- MOV R1,#0x20 -- R1 = 0x20
+            result (1) := x"E3A02000";-- 0x1		 -- MOV R2,#0x00 -- R2 = 0
+            result (2) := x"E6110000";-- 0x2 _loop -- LDR R0,0(R1) -- R0 = DATAMEM[R1]
+            result (3) := x"E0822000";-- 0x3		 -- ADD R2,R2,R0 -- R2 = R2 + R0
+            result (4) := x"E2811001";-- 0x4		 -- ADD R1,R1,#1 -- R1 = R1 + 1
+            result (5) := x"E351002A";-- 0x5		 -- CMP R1,0x2A  -- si R1 >= 0x2A
+            result (6) := x"BAFFFFFB";-- 0x6		 -- BLT loop 	 -- PC = PC + (-5) si N = 1
+            result (7) := x"E6012000";-- 0x7		 -- STR R2,0(R1) -- DATAMEM[R1] = R2
+            result (8) := x"EAFFFFF7";-- 0x8		 -- BAL main	 -- PC = PC + (-7)    
         return result; 
         end init_mem;  
         signal instruction_memory: RAM64x32 := init_mem; 
@@ -80,16 +80,12 @@ begin
         else
             Rm <= "0000";
         end if;
-        if instruction(25)='1' AND instruction(27 downto 26)="00" then
-                imm8 <= instruction(7 downto 0);
-        else
-            imm8 <= "00000000";
-        end if;
+        
     end process;
 
    
     instruction <= instruction_memory(conv_integer(PC));  -- Using PC(7 downto 2) to access the 64-word memory
-    
+    imm8 <= instruction(7 downto 0);
    
 
     
